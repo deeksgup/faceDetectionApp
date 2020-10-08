@@ -38,27 +38,29 @@ class App extends Component {
       box:{},
       route:'signin',
       isSignedIn:false,
+
       user: {
          id:'',
          name:'',
          email:'',
          password:'',
          entries:0,
-         joined:new Date()
+         joined:''
       }
     }
   }
 
   loadUser=(data)=>{
-    this.setState({user:{
-         id:'data.id',
-         name:'data.name',
-         email:'data.email',
-         entries:'data.entries',
+    this.setState(Object.assign(this.state.user,{
+         id:data.id,
+         name:data.name,
+         email:data.email,
+         entries:data.entries,
          joined:data.joined
-    }})
+    }))
   }
   
+
  calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
@@ -72,19 +74,22 @@ class App extends Component {
     }
   }
 
+
   displayFaceBox = (box) => {
     this.setState({box: box});
   }
+
   onInputchange = (event) =>
   {
     this.setState({input:event.target.value});
   }
 
    onButtonSubmit = () => {
-    this.setState({imageUrl: this.state.input});
+    this.setState(Object.assign(this.state,{imageUrl: this.state.input}));
+   // console.log(this.state.imageUrl);
     app.models
       .predict(
-        Clarifai.FACE_DETECT_MODEL,
+        "Clarifai.FACE_DETECTION_MODEL",
         this.state.input)
       .then(response => {
         if (response) {
@@ -103,18 +108,18 @@ class App extends Component {
         }
         this.displayFaceBox(this.calculateFaceLocation(response))
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err, 'a'));
   }
 
   onRouteChange = (route) =>{
     if(route==='signout'){
-      this.setState({isSignedIn:false})
+      this.setState(Object.assign(this.state,{isSignedIn:false}))
     }
 
     if(route==='home'){
-      this.setState({isSignedIn:true})
+      this.setState(Object.assign(this.state,{isSignedIn:true}))
     }
-    this.setState({route:route});
+    this.setState(Object.assign(this.state,{route:route}));
   }
 
   render()
